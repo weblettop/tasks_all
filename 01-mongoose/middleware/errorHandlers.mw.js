@@ -10,10 +10,11 @@ module.exports.mongooseErrorHandler = (err, req, res, next)=>{
   }
 
   if(err instanceof mongoose.Error.CastError){
-return res.status(400).send({errors:[{status:400}, title:`Invalid ${err.path}`]})
-  }
+return res.status(400).send({errors:[{status:400, title:`Invalid ${err.path}`}]})}
+
+
   if(err.code === 11000){
-    return res.status(409).send({errors}: [{status:409, title:'Already exists'}])
+    return res.status(409).send({errors: [{status:409, title:'Already exists'}]})
   }
   next(err)
 }

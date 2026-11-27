@@ -11,10 +11,10 @@ const start = async()=>{
   app.listen(PORT,()=> console.log(`Server on port ${PORT}`))
 }
 
-start().catch(err){
+start().catch((err)=>{
   console.err("Unable to start:", err)
   process.exit(1)
-}
+})
 
 
 
