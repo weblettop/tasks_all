@@ -6,7 +6,7 @@ const { mongooseErrorHandler, errorHandler} = require('./middleware/errorHandler
 
 const app = express()
 app.use(express.json())
-app.use('/',router)
+app.use('/api',router)
 app.use(mongooseErrorHandler, errorHandler)
 
 module.exports = app

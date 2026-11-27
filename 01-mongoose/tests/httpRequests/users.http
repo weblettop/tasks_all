@@ -1,0 +1,92 @@
+@baseUrl = http://localhost:3000/api
+@userId = {{createUser.response.body._id}}
+
+### 201 {} -- створити користувача (ВИКОНАТИ ПЕРШИМ). email збережеться в нижньому регістрі
+
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Ann",
+  "email": "ANN{{$timestamp}}@mail.com"
+}
+
+### 409 {} -- дубль email (той самий, що щойно створили)
+
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Ann2",
+  "email": "{{createUser.response.body.email}}"
+}
+
+### 422 {} -- невалідна роль (enum: customer, creator)
+
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Bob",
+  "email": "bob{{$timestamp}}@mail.com",
+  "role": "admin"
+}
+
+### 422 {} -- ім'я коротше 2 символів (minLength: 2)
+
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "A",
+  "email": "a{{$timestamp}}@mail.com"
+}
+
+### 200 [] -- список, пагінація
+
+GET {{baseUrl}}/users?page=1&limit=2
+
+### 200 {} -- один користувач
+
+GET {{baseUrl}}/users/{{userId}}
+
+### 400 {} -- невалідний id (CastError)
+
+GET {{baseUrl}}/users/123
+
+### 404 {} -- валідний id, але такого немає
+
+GET {{baseUrl}}/users/000000000000000000000000
+
+### 200 {} -- оновити ім'я, повертається НОВИЙ документ (new: true)
+
+PATCH {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+
+{
+  "name": "Updated"
+}
+
+### 422 {} -- оновлення теж валідується (runValidators: true)
+
+PATCH {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+
+{
+  "role": "admin"
+}
+
+### 200 [] -- пости користувача
+
+GET {{baseUrl}}/users/{{userId}}/posts
+
+### 204 -- видалити (разом з його постами)
+
+DELETE {{baseUrl}}/users/{{userId}}
+
+### 404 {} -- після видалення
+
+GET {{baseUrl}}/users/{{userId}}
+```
+
