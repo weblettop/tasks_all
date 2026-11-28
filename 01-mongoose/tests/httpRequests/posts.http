@@ -1,0 +1,64 @@
+`tests/httpRequests/posts.http`:
+
+```http
+@baseUrl = http://localhost:3000/api
+@authorId = {{author.response.body._id}}
+
+### 201 {} -- створити автора (ВИКОНАТИ ПЕРШИМ)
+
+# @name author
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Author",
+  "email": "author{{$timestamp}}@mail.com"
+}
+
+### 201 {} -- пост цього автора
+
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "title": "Hello",
+  "body": "First post",
+  "author": "{{authorId}}"
+}
+
+### 422 {} -- без title (required)
+
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "author": "{{authorId}}"
+}
+
+### 404 {} -- автора з таким id немає (перевірка в контролері)
+
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "title": "Ghost",
+  "author": "000000000000000000000000"
+}
+
+### 400 {} -- невалідний id автора (CastError)
+
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "title": "Bad",
+  "author": "123"
+}
+
+### 200 [] -- усі пости, author: { _id, name, email } (populate)
+
+GET {{baseUrl}}/posts
+
+### 200 [] -- пости цього автора
+
+GET {{baseUrl}}/users/{{authorId}}/posts
